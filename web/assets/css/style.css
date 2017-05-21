@@ -1,0 +1,12 @@
+.nofloat{
+    float: none !important;
+}
+.ml10 {
+    margin-left: 10px;
+}
+.cp {
+    cursor: pointer;
+}
+.attach {
+    margin: 10px 0 0 0;
+}
