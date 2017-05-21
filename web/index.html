@@ -1,4 +1,6 @@
-<form action="/bj/task/edit/1" enctype="multipart/form-data" method="post">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<div id="c"></div>
+     <form action="/bj/task/edit/1" enctype="multipart/form-data" method="post">
     <input type="text" name="email" value="ya.rafon-92@ya.ru"/>
     <input type="text" name="user_name" value="Rafail"/>
     <textarea name="description"></textarea>
@@ -14,3 +16,16 @@
     <input type="file" name="picture"/>
     <button type="submit">s</button>
 </form>
+
+<script>
+    $.ajax({
+        url:"/bj/task/index/1",
+        dataType:"json",
+        success:function(res){
+            for(var i in res) {
+                $("#c").append(res[i]['description']);
+                $("#c").append("<img src='"+res[i]['picture']+"'/>");
+            }
+        }
+    })
+</script>

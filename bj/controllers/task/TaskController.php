@@ -9,6 +9,8 @@ class TaskController extends \Vendor\Controller\Controller {
         if (!empty($this->post) && $form->validate($this->post)) {
             $model = \Models\Task\Model::getInstance();
             $picture = $_FILES["picture"];
+                  
+
             if (!empty($picture)) {
                 $picturePath = $model->addPicture($picture);
             } else {

@@ -12,12 +12,12 @@ class Model {
 
     private $db;
     private static $instance;
-  
 
     const Q_GET_BY_ID = 'SELECT id, user_name, email, description, picture, done FROM tasks WHERE id = ?';
     const Q_GET = 'SELECT id, user_name, email, description, picture, done FROM tasks LIMIT :offset, :count';
     const Q_ADD = 'INSERT INTO tasks (id, user_name, email, description, picture) VALUES (NULL,?,?,?,?);';
     const Q_DELETE = 'DELETE FROM tasks WHERE id = ?';
+
     private function __construct() {
         $this->db = \Logic\Db\Database::getInstance();
     }
@@ -33,8 +33,8 @@ class Model {
     }
 
     public function getOnePage($pageNum, $countOnPage) {
-        $offset = ($pageNum-1) * $countOnPage;
-        $stmt = $this->db->executeWithBind(self::Q_GET, ['offset' => (int)$offset, 'count' => (int)$countOnPage], true);
+        $offset = ($pageNum - 1) * $countOnPage;
+        $stmt = $this->db->executeWithBind(self::Q_GET, ['offset' => (int) $offset, 'count' => (int) $countOnPage], true);
         return $stmt->fetchAll();
     }
 
@@ -75,17 +75,15 @@ class Model {
         }
         return false;
     }
-    
+
     public function removeTask($id) {
         $stmt = $this->db->execute(self::Q_DELETE, [$id], true);
-        if ( $stmt->rowCount()) {
+        if ($stmt->rowCount()) {
             return true;
         }
         return false;
     }
-    
 
-    
     private function resizeImage($file, $size, $newSizes) {
         $w = $newSizes[0];
         $h = $newSizes[1];
@@ -98,20 +96,29 @@ class Model {
             $newheight = $w / $r;
             $newwidth = $w;
         }
+        
+
         switch ($size[2]) {
             case IMAGETYPE_GIF:
                 $src = imagecreatefromgif($file);
+                $image_save_func = 'imagegif';
                 break;
             case IMAGETYPE_JPEG:
                 $src = imagecreatefromjpeg($file);
+                $image_save_func = 'imagejpeg';
                 break;
             case IMAGETYPE_PNG:
                 $src = imagecreatefrompng($file);
+                $image_save_func = 'imagepng';
                 break;
         }
-
         $dst = imagecreatetruecolor($newwidth, $newheight);
-        return imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $size[0], $size[1]);
+        imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $size[0], $size[1]);
+        if (file_exists($file)) {
+            unlink($file);
+        }
+        
+        $image_save_func($dst, $file, 100);
     }
 
     public function addPicture($picture) {
@@ -123,15 +130,17 @@ class Model {
         if (!in_array($size[2], $valid_types)) {
             return "";
         }
-        $name = $fileHelper->getName(UPLOAD_DIR . DIRECTORY_SEPARATOR . $picture['name']);
+        $name = $fileHelper->getName(ABS_UPLOAD_DIR . DIRECTORY_SEPARATOR . $picture['name']);
         if (!$fileHelper->copyFile($picture['tmp_name'], $name)) {
             return false;
         };
+       
         if ($size[0] > $maxSize[0] || $size[1] > $maxSize[1]) {
             if ($this->resizeImage($name, $size, $maxSize)) {
                 
             };
         }
+        $name = str_replace(ABS_UPLOAD_DIR, MAIN_DIR . UPLOAD_DIR, $name);
         return $name;
     }
 

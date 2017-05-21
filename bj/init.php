@@ -10,7 +10,8 @@ define("MAIN_DIR",  "/bj");
 define("DOCUMENT_ROOT", filter_input(INPUT_SERVER, "DOCUMENT_ROOT"));
 define("PUBLIC_DIR",  MAIN_DIR."/assets");
 define("ABS_MAIN_DIR",  DOCUMENT_ROOT . MAIN_DIR);
-define("UPLOAD_DIR",  ABS_MAIN_DIR."/upload");
+define("UPLOAD_DIR",  "/upload");
+define("ABS_UPLOAD_DIR",  ABS_MAIN_DIR.UPLOAD_DIR);
 define("CACHE_DIR",  ABS_MAIN_DIR."/cache");
 
 function Redirect($to){
